@@ -16,12 +16,9 @@ object MyFirstEcoSystemV2 extends LotkaVolterraEcoSystem {
 
   fauna(Deer,1.05)
 
-  fauna(Rabbit,1.00)
-
   predation(Wolf,Deer,0.001,0.0001)
 
-  predation(Rabbit)
-
+  fauna(Rabbit,_(Rabbit)+1 )
 
   //
 
@@ -46,7 +43,7 @@ object MyFirstEcoSystemV2 extends LotkaVolterraEcoSystem {
 
 case class Predation(predator:Fauna.Value,prey:Fauna.Value,predatorRate:Double,preyRate:Double)
 
-class LotkaVolterraEcoSystem {
+class LotkaVolterraEcoSystem extends EcoSystem {
 
   var fauna2rr = Map.empty[Fauna.Value,Double]
   var predations = List.empty[Predation]
@@ -56,14 +53,11 @@ class LotkaVolterraEcoSystem {
 
   def predation(predator:Fauna.Value,prey:Fauna.Value,predatorRate:Double,preyRate:Double): Unit = {
     predations =  Predation(predator, prey, predatorRate, preyRate) :: predations
+    super.fauna(predator,lotkaVolterraCycle(predator))
+    super.fauna(prey,lotkaVolterraCycle(prey))
   }
 
-  def predation(prey:Fauna.Value): Unit = {
-    //predations =  new Predation(predator, prey, predatorRate, preyRate) :: predations
-  }
-
-
-  def cycle(fauna:Fauna.Value,population: Population): Int = {
+  def lotkaVolterraCycle(fauna:Fauna.Value)(population: Population): Int = {
     val pop = population(fauna)
     val asFauna = pop*fauna2rr(fauna)
     val asPrey = predations.filter(_.prey.equals(fauna))//
@@ -75,10 +69,21 @@ class LotkaVolterraEcoSystem {
     (asFauna + asPredator + asPrey).toInt
   }
 
+
+
+}
+
+class EcoSystem {
+
+  var fauna2cycle = Map.empty[Fauna.Value,Cycle]
+
+  def fauna(fauna:Fauna.Value,cycle:Cycle): Unit = fauna2cycle += (fauna -> cycle)
+
   def cycle(population: Population): Population = {
-    population .map { case (v,_) =>  (v,cycle(v,population)) }
+    population .map { case (fauna,_) =>  (fauna,fauna2cycle(fauna)(population)) }
   }
 
-  type Population =  Map[Fauna.Value,Int]   // scala.collection.immutable.HashMap[String,Float]
+  type Cycle = Population=>Int
+  type Population =  Map[Fauna.Value,Int]
 
 }
