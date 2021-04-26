@@ -7,7 +7,7 @@ object Fauna extends Enumeration {
 
 import Fauna._
 
-object MyFirstEcoSystemV2 extends EcoSystem {
+object MyFirstEcoSystemV2 extends LotkaVolterraEcoSystem {
 
   // Fauna deer = new Fauna("Deer", 1.05, 100);
   // Fauna wolf = new Fauna("Wolf", 0.9, 10);
@@ -20,9 +20,8 @@ object MyFirstEcoSystemV2 extends EcoSystem {
 
   predation(Wolf,Deer,0.001,0.0001)
 
-  predation(Rabbit,population => {
-    (population(Rabbit) * 1.1 - population(Wolf)).asInstanceOf[Int] // a rabbit a season keeps a wolf healthy ...
-  })
+  predation(Rabbit)
+
 
   //
 
@@ -31,12 +30,12 @@ object MyFirstEcoSystemV2 extends EcoSystem {
     println("fauna="+MyFirstEcoSystemV2.fauna2rr)
     println("predation="+MyFirstEcoSystemV2.predations)
 
-    var pNext = Map(Deer->1000,Wolf->10,Rabbit-> 52)
-    println( "p0="+pNext);
+    var pNext:Population = Map(Deer->1000,Wolf->10,Rabbit-> 52)
+    println( "p0="+pNext)
 
-    for( a <- 1 to 100){
-      pNext = cycle(pNext);
-      println( "pNext="+pNext);
+    for(_ <- 1 to 100){
+      pNext = cycle(pNext)
+      println( "pNext="+pNext)
     }
 
   }
@@ -47,40 +46,39 @@ object MyFirstEcoSystemV2 extends EcoSystem {
 
 case class Predation(predator:Fauna.Value,prey:Fauna.Value,predatorRate:Double,preyRate:Double)
 
-class EcoSystem {
+class LotkaVolterraEcoSystem {
 
   var fauna2rr = Map.empty[Fauna.Value,Double]
   var predations = List.empty[Predation]
-  var hunter2predations = List.empty[(Fauna.Value)=>Int]
+  var hunter2predations = List.empty[Fauna.Value =>Int]
 
-  def fauna(fauna:Fauna.Value,rr:Double) = fauna2rr += (fauna -> rr)
+  def fauna(fauna:Fauna.Value,rr:Double): Unit = fauna2rr += (fauna -> rr)
 
-  def predation(predator:Fauna.Value,prey:Fauna.Value,predatorRate:Double,preyRate:Double) = {
-    predations =  new Predation(predator, prey, predatorRate, preyRate) :: predations
+  def predation(predator:Fauna.Value,prey:Fauna.Value,predatorRate:Double,preyRate:Double): Unit = {
+    predations =  Predation(predator, prey, predatorRate, preyRate) :: predations
   }
 
-  def predation(prey:Fauna.Value,cycle:(Map[Fauna.Value,Int])=>Int) = {
+  def predation(prey:Fauna.Value): Unit = {
     //predations =  new Predation(predator, prey, predatorRate, preyRate) :: predations
   }
 
 
-  def cycle(fauna:Fauna.Value,population: Map[Fauna.Value,Int]): Int = {
-    val pop = population(fauna);
+  def cycle(fauna:Fauna.Value,population: Population): Int = {
+    val pop = population(fauna)
     val asFauna = pop*fauna2rr(fauna)
     val asPrey = predations.filter(_.prey.equals(fauna))//
-      .map(p=>(population(p.predator)*pop*p.preyRate)) //
+      .map(p=> population(p.predator)*pop*p.preyRate) //
       .sum
     val asPredator = predations.filter(_.predator.equals(fauna))//
-      .map(p=>(population(p.prey)*pop*p.predatorRate))
+      .map(p=> population(p.prey)*pop*p.predatorRate)
       .sum
     (asFauna + asPredator + asPrey).toInt
   }
 
-
-  def cycle(population: Map[Fauna.Value,Int]): Map[Fauna.Value,Int] = {
+  def cycle(population: Population): Population = {
     population .map { case (v,_) =>  (v,cycle(v,population)) }
   }
 
+  type Population =  Map[Fauna.Value,Int]   // scala.collection.immutable.HashMap[String,Float]
+
 }
-
-
