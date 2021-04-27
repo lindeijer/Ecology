@@ -73,17 +73,3 @@ class LotkaVolterraEcoSystem extends EcoSystem {
 
 }
 
-class EcoSystem {
-
-  var fauna2cycle = Map.empty[Fauna.Value,Cycle]
-
-  def fauna(fauna:Fauna.Value,cycle:Cycle): Unit = fauna2cycle += (fauna -> cycle)
-
-  def cycle(population: Population): Population = {
-    population .map { case (fauna,_) =>  (fauna,fauna2cycle(fauna)(population)) }
-  }
-
-  type Cycle = Population=>Int
-  type Population =  Map[Fauna.Value,Int]
-
-}
