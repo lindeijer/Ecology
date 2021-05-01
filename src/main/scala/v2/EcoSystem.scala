@@ -1,18 +1,37 @@
 package nl.dgl.ecology
 package v2
 
-class EcoSystem {
+import v2.mypackage._
 
-  var fauna2cycle = Map.empty[Fauna.Value, Cycle]
+package object mypackage {
+  type Fauna = AnyRef
+  type TrophicCycle = Population => Double
+  type Population = Map[Fauna, Double]
+}
 
-  def fauna(fauna: Fauna.Value, cycle: Cycle): Unit = fauna2cycle += (fauna -> cycle)
 
-  def cycle(population: Population): Population = {
-    val f2c = fauna2cycle; // or is ref fauna2cycle unchanged within this cycle whilst fauna is called concurrently?
-    population.map { case (fauna, _) => (fauna, f2c(fauna)(population)) }
+
+class EcoSystem(val fauna2trophicCycles:Map[Fauna, TrophicCycle]) {
+
+  def this() {
+    this(Map.empty)
   }
 
-  type Cycle = Population => Int
-  type Population = Map[Fauna.Value, Int]
+  def cycle(population: Population): Population = {
+    population.map { case (fauna, _) => (fauna, fauna2trophicCycles(fauna)(population)) }
+  }
+
+  def +(other: EcoSystem): EcoSystem = {
+    new EcoSystem(this.fauna2trophicCycles ++ other.fauna2trophicCycles)
+  }
 
 }
+
+object EcoSystem extends EcoSystem {
+
+  def fauna(fauna: Fauna,cycle: TrophicCycle): EcoSystem = {
+    new EcoSystem(Map(fauna->cycle))
+  }
+
+}
+

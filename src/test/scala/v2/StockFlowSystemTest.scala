@@ -5,8 +5,6 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should
 
-import scala.collection.mutable
-
 class StockFlowSystemTest extends AnyFlatSpec with should.Matchers {
 
   "A StockFlowSystem" should "flow stock from A to B" in {
