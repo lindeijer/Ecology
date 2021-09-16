@@ -14,4 +14,4 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.7" % "test"
 // libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8" % Test  // FunSuite
 
 
-libraryDependencies += "org.apache.spark" %% "spark-sql" % "3.1.2"
+libraryDependencies += "org.apache.spark" %% "spark-sql" % "3.1.2" // hadoop 3.2.0

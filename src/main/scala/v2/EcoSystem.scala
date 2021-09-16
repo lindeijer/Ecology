@@ -11,7 +11,7 @@ package object mypackage {
 
 
 
-class EcoSystem(val fauna2trophicCycles:Map[Fauna, TrophicCycle]) {
+class EcoSystem0(val fauna2trophicCycles:Map[Fauna, TrophicCycle]) {
 
   def this() {
     this(Map.empty)
@@ -21,16 +21,16 @@ class EcoSystem(val fauna2trophicCycles:Map[Fauna, TrophicCycle]) {
     population.map { case (fauna, _) => (fauna, fauna2trophicCycles(fauna)(population)) }
   }
 
-  def +(other: EcoSystem): EcoSystem = {
-    new EcoSystem(this.fauna2trophicCycles ++ other.fauna2trophicCycles)
+  def +(other: EcoSystem0): EcoSystem0 = {
+    new EcoSystem0(this.fauna2trophicCycles ++ other.fauna2trophicCycles)
   }
 
 }
 
-object EcoSystem extends EcoSystem {
+object EcoSystem0 extends EcoSystem0 {
 
-  def fauna(fauna: Fauna,cycle: TrophicCycle): EcoSystem = {
-    new EcoSystem(Map(fauna->cycle))
+  def fauna(fauna: Fauna,cycle: TrophicCycle): EcoSystem0 = {
+    new EcoSystem0(Map(fauna->cycle))
   }
 
 }

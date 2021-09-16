@@ -13,3 +13,11 @@ For now, we cycle with a fixed period, best thought of a year progressing throug
 Ultimately:
 
 * massive, tremendous number of flora and fauna interacting with / feeding upon each other.
+
+
+Cycles
+
+* a tanh function to model reproduction. Model wrt H which is the amount of prey 1 animal needs to survive. 
+  * Less implies famine - death due to starvation. 
+  * More implies death by natural causes only.
+  * Reproduction is 50% at this level of food.

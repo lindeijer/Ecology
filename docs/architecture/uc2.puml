@@ -1,0 +1,22 @@
+@startuml
+left to right direction
+actor "Player" as player
+rectangle "Eco Sim" {
+  usecase "Configure Ecology" as conf
+  usecase "Simulate Ecology" as sim
+  usecase "Play" as play
+}
+play --> conf : <<include>>
+play --> sim : <<include>>
+player -- play
+
+note right of (sim)
+  set population at start
+  run start to end
+end note
+
+note right of (conf)
+  DSL
+end note
+
+@enduml

@@ -11,7 +11,7 @@ object Simulation {
   val Wolf = Fauna(10,2.3)
 
 
-  def main(args: Array[String]): Unit = {
+  def main_(args: Array[String]): Unit = {
     println("Hello, world!")
 
     val interaction: Map[Fauna,Map[Fauna,Double]]  = Map(//

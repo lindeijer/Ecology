@@ -10,13 +10,13 @@ object TestFauna extends Enumeration {
   val Wolf, Deer, Rabbit = Value
 }
 
-import v2.EcoSystem._
+import v2.EcoSystem0._
 import v2.TestFauna._
 
 class EcoSystemTest extends AnyFlatSpec with should.Matchers {
 
   "An EcoSystem" should "let rabbits grow and grow" in {
-
+4
     def lotkaVolterra(fna: Fauna, birthRate: Double, interactions: Map[Fauna, Double]): TrophicCycle = p => {
       p(fna) * birthRate + interactions.map({ case (f, i) => p(fna) * p(f) * i }).sum
     }
