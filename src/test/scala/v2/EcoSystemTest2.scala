@@ -1,13 +1,45 @@
 package nl.dgl.ecology
 package v2
 
-import Fauna._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should
+import EcoSystem._
 
-import nl.dgl.ecology.v2.EcoSystem._
+import scala.collection.mutable
+
+
+object Fauna extends Enumeration {
+  type Fauna = Value
+
+  case class FaunaVal(maxAge: Int, reproductionRate: Double) extends super.Val with FaunaFlora {}
+
+  import scala.language.implicitConversions
+
+  implicit def valueToFaunaVal(x: Value): FaunaVal = x.asInstanceOf[FaunaVal]
+
+  implicit def valueToEnumIndex(x: Value): Int = x.id
+
+  val $$$ = FaunaVal(0, 0.0)
+  val wolf = FaunaVal(25, 1.1)
+  val deer = FaunaVal(10, 1.11)
+  val rabbit = FaunaVal(5, 1.9)
+  val fox = FaunaVal(15, 1.1)
+  val grass = FaunaVal(Int.MaxValue, 1.0)
+
+  def toMap(ppp: Array[Int]) = {
+    var result = mutable.HashMap[String, Int]()
+    for (i <- 0 to ppp.length - 1) {
+      result += (Fauna(i).toString -> ppp(i))
+    }
+    result
+  }
+}
+
+////////////////////////////
 
 class EcoSystem2Test extends AnyFlatSpec with should.Matchers {
+
+  import Fauna._
 
   "PotentialsSum" should "compute" in {
     object EcoSys extends EcoSystem {
@@ -99,13 +131,13 @@ class EcoSystem2Test extends AnyFlatSpec with should.Matchers {
     p(deer) = 333
     p(grass) = Int.MaxValue
     //
-    val p1 = Zoogaloo.cycle(p)
+    val p1 = Zoogaloo.cycle(p).pNext
     p1(wolf) should be(12)
     p1(deer) should be(223) // p=333 offspring=33 wolf=143
-    val p2 = Zoogaloo.cycle(p1)
+    val p2 = Zoogaloo.cycle(p1).pNext
     p2(wolf) should be(13)
     p2(deer) should be(0)
-    val p3 = Zoogaloo.cycle(p2)
+    val p3 = Zoogaloo.cycle(p2).pNext
     p3(wolf) should be(1)
     p3(deer) should be(0)
   }
@@ -121,15 +153,15 @@ class EcoSystem2Test extends AnyFlatSpec with should.Matchers {
     p(deer) = 1000
     p(rabbit) = 1000
     p(grass) = Int.MaxValue
-    val p1 = Foogaloo.cycle(p)
+    val p1 = Foogaloo.cycle(p).pNext
     p1(wolf) should be(55)
     p1(deer) should be(770)
     p1(rabbit) should be(1569)
-    val p2 = Foogaloo.cycle(p1)
+    val p2 = Foogaloo.cycle(p1).pNext
     p2(wolf) should be(60)
     p2(deer) should be(0)
     p2(rabbit) should be(0)
-    val p3 = Foogaloo.cycle(p2)
+    val p3 = Foogaloo.cycle(p2).pNext
     p3(wolf) should be(3)
     p3(deer) should be(0)
     p3(rabbit) should be(0)

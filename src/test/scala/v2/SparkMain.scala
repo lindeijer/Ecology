@@ -1,12 +1,11 @@
 package nl.dgl.ecology
 package v2
 
-import v2.Fauna.{deer, fox, rabbit, wolf,grass}
+import Fauna._
 
-import nl.dgl.ecology.v2.{EcoSystem, Fauna}
+
+
 import org.apache.spark.sql.{Row, SparkSession}
-
-
 
 object Boogaloo extends EcoSystem {
 
@@ -38,9 +37,12 @@ object Main {
     var a = 0;
     for (a <- 1 to 10) {
       println("-----")
-      val pNext = Boogaloo.cycle(population)
+      val ecoCycleNext = Boogaloo.cycle(population)
+      println("  predatorCycles="+ecoCycleNext.predatorCycles)
+      println("  predatorCycles="+ecoCycleNext.herbivoreCycles)
+      println("  pNext="+Fauna.toMap(ecoCycleNext.pNext))
       populations = populations :+ Row.fromSeq(population)
-      population = pNext;
+      population = ecoCycleNext.pNext;
     }
 
     populations

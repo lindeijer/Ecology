@@ -1,53 +1,27 @@
 package nl.dgl.ecology
-package v2
 
 import scala.collection.mutable
 import scala.math._
 
-
-object Fauna extends Enumeration {
-  type Fauna = Value
-
-  case class FaunaVal(maxAge: Int, reproductionRate: Double) extends super.Val {}
-
-  import scala.language.implicitConversions
-
-  implicit def valueToFaunaVal(x: Value): FaunaVal = x.asInstanceOf[FaunaVal]
-
-  implicit def valueToEnumIndex(x: Value): Int = x.id
-
-  val $$$ = FaunaVal(0, 0.0)
-  val wolf = FaunaVal(25, 1.1)
-  val deer = FaunaVal(10, 1.11)
-  val rabbit = FaunaVal(5, 1.9)
-  val fox = FaunaVal(15, 1.1)
-  val grass = FaunaVal(Int.MaxValue, 1.0)
-}
-
-object Population {
-
-  def apply(ppp: Array[Int]) = {
-    var result = mutable.HashMap[String, Int]()
-    for (i <- 0 to ppp.length - 1) {
-      result += (Fauna(i).toString -> ppp(i))
-    }
-    result
-  }
+trait FaunaFlora {
+  def id:Int
+  def reproductionRate:Double
+  def maxAge:Int
 }
 
 ////////////////
 
-case class Plant(about: Fauna.Value) {}
+case class Plant(about: FaunaFlora) {}
 
-case class Food(about: Fauna.Value, min: Int, max: Int) {}
+case class Food(about: FaunaFlora, min: Int, max: Int) {}
 
-case class Prey(about: Fauna.Value, min: Int, max: Int) {}
+case class Prey(about: FaunaFlora, min: Int, max: Int) {}
 
-case class Feeder(about: Fauna.Value) {
+case class Feeder(about: FaunaFlora) {
 
   var foods = List[Food]();
 
-  def eats(food: Fauna.Value, min: Int, max: Int): Feeder = {
+  def eats(food: FaunaFlora, min: Int, max: Int): Feeder = {
     foods = Food(food, min, max) :: foods;
     this
   }
@@ -98,7 +72,6 @@ case class FeederCycle(feeder: Feeder, ppp: Array[Int]) {
 
 }
 
-
 /////////////
 
 object EcoSystem {
@@ -120,34 +93,34 @@ class EcoSystem {
   var plants = List[Plant]()
 
 
-  def predator(predator: Fauna.Value) = {
+  def predator(predator: FaunaFlora) = {
     predators = new Feeder(predator) :: predators
     predators.head
   }
 
-  def herbivore(herbivore: Fauna.Value) = {
+  def herbivore(herbivore: FaunaFlora) = {
     herbivores = new Feeder(herbivore) :: herbivores
     herbivores.head
   }
 
-  def plant(plant: Fauna.Value) = {
+  def plant(plant: FaunaFlora) = {
     plants = new Plant(plant) :: plants
     plants.head
   }
 
-  def cycle(ppp: Array[Int]) = {
+  case class EcoSystemCycle(
+                             pNext: Array[Int]       ,
+                             predatorCycles:List[FeederCycle],
+                             herbivoreCycles:List[FeederCycle]
+                           )
 
-    println("ppp=" + Population(ppp))
+  def cycle(ppp: Array[Int]) = {
 
     // compute predator effects wrt ppp
     val predatorCycles = predators.map(predator => FeederCycle(predator, ppp))
 
-    println("predatorCycles=" + predatorCycles)
-
     // compute herbivore effects wrt ppp
     val herbivoreCycles = herbivores.map(herbivore => FeederCycle(herbivore, ppp))
-
-    println("herbivoreCycles=" + herbivoreCycles)
 
     val qqq = new Array[Int](ppp.size)
 
@@ -155,8 +128,6 @@ class EcoSystem {
     plants.foreach(plant => {
       qqq(plant.about.id) = ppp(plant.about.id)
     }) // perfect recovery
-
-    println("plants=" + plants)
 
     // set predator population
     predatorCycles.foreach(pC => qqq(pC.feeder.about.id) = pC.pNext)
@@ -179,9 +150,7 @@ class EcoSystem {
 
     xxx(0) = ppp(0) + 1
 
-    println("xxx=" + Population(xxx))
-
-    xxx
+    EcoSystemCycle (xxx,predatorCycles,herbivoreCycles)
 
   } // end of EcoSystem cycle
 
