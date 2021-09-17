@@ -1,11 +1,8 @@
 package nl.dgl.ecology
-package v2
-
-import Fauna._
-
-
 
 import org.apache.spark.sql.{Row, SparkSession}
+
+import Fauna._
 
 object Boogaloo extends EcoSystem {
 
@@ -65,7 +62,7 @@ object SparkMain {
 
   def main(args: Array[String]): Unit = {
 
-    import org.apache.spark.sql.types.{StructField, IntegerType,StructType};
+    import org.apache.spark.sql.types.{IntegerType, StructField, StructType};
 
     var populations :Seq[Row] = Main.cycle()
 

@@ -1,6 +1,5 @@
 package nl.dgl.ecology
 
-import scala.collection.mutable
 import scala.math._
 
 trait FaunaFlora {
@@ -76,7 +75,7 @@ case class FeederCycle(feeder: Feeder, ppp: Array[Int]) {
 
 object EcoSystem {
   def potentialRepro(min: Double)(pPred: Double): Double = {
-    val x = (8.0 / min) * (pPred - min) // 8 rather than 2 for a steeper curve, a more sudden change from excess to famine.
+    val x = (2.0 / min) * (pPred - min) // 8 rather than 2 for a steeper curve, a more sudden change from excess to famine.
     0.5 * tanh(x) + 0.5
   }
 
